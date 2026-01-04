@@ -3,6 +3,7 @@ class UserProfile {
   final String lastName;
   final String email;
   final String street;
+  final String password;
   final String city;
   final String zipCode;
 
@@ -11,6 +12,7 @@ class UserProfile {
     required this.lastName,
     required this.email,
     required this.street,
+    required this.password,
     required this.city,
     required this.zipCode,
   });

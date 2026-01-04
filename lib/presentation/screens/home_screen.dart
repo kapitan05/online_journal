@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
 import 'package:online_journal_local/presentation/screens/registration_wizard.dart';
 import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
@@ -24,6 +25,10 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const RegistrationWizard()),
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => context.read<AuthCubit>().signOut(),
           ),
         ],
       ),

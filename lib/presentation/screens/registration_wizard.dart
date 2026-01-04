@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
 import '../../domain/entities/user_profile.dart';
-import '../cubit/user_cubit.dart';
 
 class RegistrationWizard extends StatefulWidget {
   const RegistrationWizard({super.key});
@@ -24,6 +24,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
   final _streetCtrl = TextEditingController();
   final _cityCtrl = TextEditingController();
   final _zipCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
 
   // Regex for Validation email and zip
   final _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
@@ -49,12 +50,14 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
         firstName: _firstNameCtrl.text,
         lastName: _lastNameCtrl.text,
         email: _emailCtrl.text,
+        password: _passwordCtrl.text,
         street: _streetCtrl.text,
         city: _cityCtrl.text,
         zipCode: _zipCtrl.text,
+
       );
 
-      context.read<UserCubit>().saveUserProfile(newUser);
+      context.read<AuthCubit>().signUp(newUser);
       Navigator.pop(context); // Close wizard
       
       ScaffoldMessenger.of(context).showSnackBar(
@@ -142,6 +145,13 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
                       if (!_emailRegex.hasMatch(v)) return 'Enter a valid email';
                       return null;
                     },
+                  ),
+                  // password field
+                  TextFormField(
+                    controller: _passwordCtrl,
+                    obscureText: true, // Hide text 
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    validator: (v) => v!.length < 6 ? 'Min 6 characters' : null,
                   ),
                 ],
               ),
