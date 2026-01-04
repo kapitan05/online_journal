@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
-import 'add_journal_screen.dart';
+import 'add_journal_wizard.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const AddJournalScreen()),
+            MaterialPageRoute(builder: (_) => const AddJournalWizard()),
           );
         },
         child: const Icon(Icons.add),

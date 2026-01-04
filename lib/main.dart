@@ -17,6 +17,8 @@ void main() async {
 
   await di.init(); 
 
+  print("📦 Hive Storage Path: ${Hive.box<JournalEntryModel>('journalBox').path}");
+
   runApp(const MainApp());
 }
 

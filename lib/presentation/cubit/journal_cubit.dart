@@ -20,21 +20,20 @@ class JournalCubit extends Cubit<JournalState> {
     }
   }
 
-  // 2. Add a new entry
-  Future<void> addEntry(String title, String content) async {
+  
+
+  Future<void> addEntry(String title, String content, String mood) async {
     try {
-      // Create the entity
       final newEntry = JournalEntry(
-        id: DateTime.now().toString(), // Simple ID generation
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: title,
         content: content,
         date: DateTime.now(),
-        mood: 'Neutral', // Default mood for now
+        mood: mood, // <--- Use the passed mood instead of hardcoded 'Neutral'
       );
 
       await repository.addEntry(newEntry);
       
-      // Reload the list so the UI updates
       loadEntries(); 
     } catch (e) {
       emit(JournalError("Failed to add entry: $e"));
