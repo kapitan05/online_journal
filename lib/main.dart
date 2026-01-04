@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:online_journal_local/data/models/user_profile_model.dart';
+import 'package:online_journal_local/presentation/cubit/user_cubit.dart';
 
 import 'injection_container.dart' as di; 
 import 'presentation/cubit/journal_cubit.dart';
 import 'data/models/journal_entry_model.dart';
-
-// NEW: Import the real Home Screen
 import 'presentation/screens/home_screen.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
+
+  // Register Adapters for Hive models
   Hive.registerAdapter(JournalEntryModelAdapter());
+  Hive.registerAdapter(UserProfileModelAdapter());
 
   await di.init(); 
-
-  print("📦 Hive Storage Path: ${Hive.box<JournalEntryModel>('journalBox').path}");
+ 
+  // Just to verify the box path
+  print("📦 Hive Storage Path: ${Hive.box<UserProfileModel>('userBox').path}");
 
   runApp(const MainApp());
 }
@@ -27,8 +31,11 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => di.sl<JournalCubit>()..loadEntries(),
+      return MultiBlocProvider( // MultiBlocProvider because we have multiple cubits
+            providers: [
+              BlocProvider(create: (_) => di.sl<JournalCubit>()..loadEntries()),
+              BlocProvider(create: (_) => di.sl<UserCubit>()), 
+            ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

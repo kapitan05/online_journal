@@ -1,11 +1,12 @@
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
-
-// Imports needed for correct types
+import 'package:online_journal_local/data/repositories/user_repository.dart';
+import 'package:online_journal_local/presentation/cubit/user_cubit.dart';
 import 'domain/repositories/journal_repository.dart';
 import 'data/repositories/hive_journal_repository.dart';
 import 'presentation/cubit/journal_cubit.dart';
-import 'data/models/journal_entry_model.dart'; // <--- Make sure to import this!
+import 'data/models/journal_entry_model.dart';
+import 'data/models/user_profile_model.dart';
 
 final sl = GetIt.instance;
 
@@ -23,4 +24,18 @@ Future<void> init() async {
   );
 
   sl.registerFactory(() => JournalCubit(sl()));
+
+  // ! External (User Profile Box)// 1. Open Box
+
+  
+  final userBox = await Hive.openBox<UserProfileModel>('userBox');
+  sl.registerLazySingleton<Box<UserProfileModel>>(() => userBox);
+
+  // 2. Repository
+  sl.registerLazySingleton(() => UserRepository(sl<Box<UserProfileModel>>()));
+
+  // 3. Cubit
+  sl.registerFactory(() => UserCubit(sl()));
+
+
 }

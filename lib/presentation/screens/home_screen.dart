@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_journal_local/presentation/screens/registration_wizard.dart';
 import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
 import 'add_journal_wizard.dart';
@@ -10,9 +11,21 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // connect RegistrationWizard to the AppBar icon 
       appBar: AppBar(
         title: const Text('Smart Journal'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RegistrationWizard()),
+              );
+            },
+          ),
+        ],
       ),
       // FAB navigates to the Add Screen
       floatingActionButton: FloatingActionButton(
