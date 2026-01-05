@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:io'; // <--- Needed to display the image file
+import 'package:flutter/material.dart'; 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
 import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import '../../domain/entities/user_profile.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegistrationWizard extends StatefulWidget {
   const RegistrationWizard({super.key});
@@ -14,6 +16,10 @@ class RegistrationWizard extends StatefulWidget {
 class _RegistrationWizardState extends State<RegistrationWizard> {
   int _currentStep = 0;
   bool _isCheckingEmail = false; // State to show spinner while checking DB
+
+  // Image Picker State
+  String? _selectedImagePath;
+  final ImagePicker _picker = ImagePicker();
 
   // Form Keys for Validation
   final _personalInfoKey = GlobalKey<FormState>();
@@ -32,6 +38,8 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
   final _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
   final _zipRegex = RegExp(r'^\d{5}$'); // Allows exactly 5 digits
 
+
+
   @override
   void dispose() {
     _firstNameCtrl.dispose();
@@ -43,6 +51,61 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
     _passwordCtrl.dispose();
     super.dispose();
   }
+
+
+  //  Pick Image
+  Future<void> _pickImage(ImageSource source) async {
+      try {
+        final XFile? image = await _picker.pickImage(source: source);
+        if (image != null) {
+          setState(() {
+            _selectedImagePath = image.path;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to pick image: $e')),
+          );
+        }
+      }
+    }
+  
+  // Show Image Source Action Sheet
+void _showImageSourceActionSheet(BuildContext context) {
+  // Check if we are on a mobile device
+  bool isMobile = Platform.isAndroid || Platform.isIOS;
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext ctx) {
+      return SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Gallery'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            // Only show Camera option if we are on Android or iOS
+            if (isMobile)
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Camera'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
   // Show dialog if email already exists
   void _showEmailExistsDialog() {
@@ -84,6 +147,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
         street: _streetCtrl.text,
         city: _cityCtrl.text,
         zipCode: _zipCtrl.text,
+        profileImagePath: _selectedImagePath,
       );
 
       context.read<AuthCubit>().signUp(newUser);
@@ -192,6 +256,25 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
                 key: _personalInfoKey,
                 child: Column(
                   children: [
+                    // Image Picker ui
+                    GestureDetector(
+                      onTap: () => _showImageSourceActionSheet(context),
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.grey[200],
+                        backgroundImage: _selectedImagePath != null
+                            ? FileImage(File(_selectedImagePath!))
+                            : null,
+                        child: _selectedImagePath == null
+                                // Update Icon to show "add_a_photo" which implies choice
+                                ? const Icon(Icons.add_a_photo, size: 40, color: Colors.grey)
+                                : null,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text('Tap to add photo', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const SizedBox(height: 20),
+                    // user details fields
                     TextFormField(
                       controller: _firstNameCtrl,
                       decoration: const InputDecoration(labelText: 'First Name', border: OutlineInputBorder()),
@@ -286,6 +369,17 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Display selected image if any
+                    Center(
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundImage: _selectedImagePath != null
+                            ? FileImage(File(_selectedImagePath!))
+                            : null,
+                        child: _selectedImagePath == null ? const Icon(Icons.person) : null,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
                     _buildReviewRow('Name:', '${_firstNameCtrl.text} ${_lastNameCtrl.text}'),
                     _buildReviewRow('Email:', _emailCtrl.text),
                     const Divider(),

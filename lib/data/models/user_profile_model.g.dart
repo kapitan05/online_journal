@@ -24,13 +24,14 @@ class UserProfileModelAdapter extends TypeAdapter<UserProfileModel> {
       city: fields[4] as String,
       zipCode: fields[5] as String,
       password: fields[6] as String,
+      profileImagePath: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfileModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.firstName)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class UserProfileModelAdapter extends TypeAdapter<UserProfileModel> {
       ..writeByte(5)
       ..write(obj.zipCode)
       ..writeByte(6)
-      ..write(obj.password);
+      ..write(obj.password)
+      ..writeByte(7)
+      ..write(obj.profileImagePath);
   }
 
   @override

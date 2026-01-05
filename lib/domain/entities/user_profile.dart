@@ -6,6 +6,7 @@ class UserProfile {
   final String password;
   final String city;
   final String zipCode;
+  final String? profileImagePath;
 
   UserProfile({
     required this.firstName,
@@ -15,5 +16,6 @@ class UserProfile {
     required this.password,
     required this.city,
     required this.zipCode,
+    this.profileImagePath,
   });
 }

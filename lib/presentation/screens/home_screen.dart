@@ -1,8 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
 import 'package:online_journal_local/presentation/cubit/auth_state.dart';
-import 'package:online_journal_local/presentation/screens/registration_wizard.dart';
 import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
 import 'add_journal_wizard.dart';
@@ -51,18 +51,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome, ${user.firstName}'), // Personalized Title
-        centerTitle: true,
+        title: Text('Welcome, ${user.firstName}'),
+                centerTitle: true,
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    backgroundImage: user.profileImagePath != null
+                        ? FileImage(File(user.profileImagePath!))
+                        : null,
+                    child: user.profileImagePath == null
+                        ? Text(user.firstName[0].toUpperCase()) // Initials if no image
+                        : null,
+                  ),
+                ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const RegistrationWizard()),
-              );
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => context.read<AuthCubit>().signOut(),

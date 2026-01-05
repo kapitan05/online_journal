@@ -26,6 +26,9 @@ class UserProfileModel extends HiveObject {
   @HiveField(6) 
   final String password;
 
+  @HiveField(7)
+  final String? profileImagePath;
+
   UserProfileModel({
     required this.firstName,
     required this.lastName,
@@ -34,6 +37,7 @@ class UserProfileModel extends HiveObject {
     required this.city,
     required this.zipCode,
     required this.password,
+    this.profileImagePath,
   });
 
   // Mapper: Model -> Entity
@@ -45,6 +49,7 @@ class UserProfileModel extends HiveObject {
     city: city,
     zipCode: zipCode,
     password: password,
+    profileImagePath: profileImagePath,
   );
 
   // Mapper: Entity -> Model
@@ -56,5 +61,6 @@ class UserProfileModel extends HiveObject {
     city: user.city,
     zipCode: user.zipCode,
     password: user.password,
+    profileImagePath: user.profileImagePath,
   );
 }

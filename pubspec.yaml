@@ -21,7 +21,7 @@ dependencies:
   go_router: ^13.0.0
   
   # Camera/Image
-  image_picker: ^1.0.7
+  image_picker: ^1.2.1
   
   # Internationalization
   intl: ^0.19.0
