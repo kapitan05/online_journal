@@ -39,6 +39,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  bloc_test: ^9.1.0  # For testing Cubits
+  mocktail: ^1.0.0   # For mocking Repositories (Easier than Mockito)
+  # patrol: ^3.0.0   # (Optional) We will use standard flutter_test for simplicity
   
   # Code Generation
   build_runner: ^2.4.8
