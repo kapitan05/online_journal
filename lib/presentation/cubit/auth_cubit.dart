@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import '../../domain/entities/user_profile.dart';
-import '../../data/repositories/user_repository.dart';
+import '../../data/repositories/hive_user_repository.dart';
 
 
 // Logic 
 class AuthCubit extends Cubit<AuthState> {
-  final UserRepository repository;
+  final HiveUserRepository repository;
 
   AuthCubit(this.repository) : super(AuthInitial());
 

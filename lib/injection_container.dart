@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
-import 'package:online_journal_local/data/repositories/user_repository.dart';
+import 'package:online_journal_local/data/repositories/hive_user_repository.dart';
 import 'domain/repositories/journal_repository.dart';
 import 'data/repositories/hive_journal_repository.dart';
 import 'presentation/cubit/journal_cubit.dart';
@@ -21,7 +21,7 @@ Future<void> init() async {
   sl.registerLazySingleton<Box<UserProfileModel>>(() => usersBox);
 
   // 2. Repository (Injects both boxes)
-  sl.registerLazySingleton(() => UserRepository(usersBox, sessionBox));
+  sl.registerLazySingleton(() => HiveUserRepository(usersBox, sessionBox));
 
   // 3. Auth Cubit
   sl.registerFactory(() => AuthCubit(sl()));
