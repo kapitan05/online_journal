@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
 import 'package:online_journal_local/presentation/cubit/auth_state.dart';
+import 'package:online_journal_local/presentation/widgets/journal_entry_card.dart';
 import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
 import 'add_journal_wizard.dart';
@@ -111,60 +112,23 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(8),
               itemBuilder: (context, index) {
                 final entry = state.entries[index];
-                // Each entry card with Hero animation for mood emoji
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    // --- THE HERO ANIMATION SOURCE ---
-                    leading: Hero(
-                      tag:
-                          'mood_${entry.id}', // Unique ID links the two screens
-                      child: CircleAvatar(
-                        // ignore: deprecated_member_use
-                        backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                        child: Text(_getMoodEmoji(entry.mood)),
+
+                // Using our Custom Widget
+                return JournalEntryCard(
+                  entry: entry,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => JournalDetailsScreen(entry: entry),
                       ),
-                    ),
-                    title: Text(
-                      entry.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 4),
-                        Text(
-                          entry.content,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _formatDate(entry.date),
-                          style:
-                              TextStyle(color: Colors.grey[600], fontSize: 12),
-                        ),
-                      ],
-                    ),
-                    // Navigation on Tap
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => JournalDetailsScreen(entry: entry),
-                        ),
-                      );
-                    },
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () {
-                        context
-                            .read<JournalCubit>()
-                            .deleteEntry(entry.id, _currentUserId);
-                      },
-                    ),
-                  ),
+                    );
+                  },
+                  onDelete: () {
+                    context
+                        .read<JournalCubit>()
+                        .deleteEntry(entry.id, _currentUserId);
+                  },
                 );
               },
             );
@@ -174,24 +138,5 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}";
-  }
-
-  String _getMoodEmoji(String mood) {
-    switch (mood) {
-      case 'Happy':
-        return '😊';
-      case 'Sad':
-        return '😢';
-      case 'Excited':
-        return '🤩';
-      case 'Tired':
-        return '😴';
-      default:
-        return '😐';
-    }
   }
 }

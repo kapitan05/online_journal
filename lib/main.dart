@@ -10,6 +10,7 @@ import 'injection_container.dart' as di;
 import 'presentation/cubit/journal_cubit.dart';
 import 'data/models/journal_entry_model.dart';
 import 'presentation/screens/home_screen.dart';
+import 'presentation/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +46,7 @@ class MainApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+        theme: AppTheme.lightTheme,
         // Auth Wrapper: Decides what to show
         home: BlocBuilder<AuthCubit, AuthState>(
           builder: (context, state) {
