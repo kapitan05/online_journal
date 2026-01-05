@@ -60,7 +60,7 @@ void main() {
   testWidgets('Integration Flow: Add Entry Wizard Navigation',
       (WidgetTester tester) async {
     // 1. Set Screen Size (Phone dimensions) to ensure buttons are visible
-    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.physicalSize = const Size(2400, 3200);
     tester.view.devicePixelRatio = 3.0;
 
     // 2. Load HomeScreen
