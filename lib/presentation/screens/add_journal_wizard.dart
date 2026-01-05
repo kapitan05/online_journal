@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/journal_cubit.dart';
 
 class AddJournalWizard extends StatefulWidget {
-  const AddJournalWizard({super.key});
+
+  
+  final String userId;
+  const AddJournalWizard({super.key, required this.userId});
+  
 
   @override
   State<AddJournalWizard> createState() => _AddJournalWizardState();
@@ -41,6 +45,7 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
         _titleController.text,
         _contentController.text,
         _selectedMood,
+        widget.userId, // Pass the userId
       );
       Navigator.pop(context); // Close the wizard
     } else {

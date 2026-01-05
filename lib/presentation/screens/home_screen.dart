@@ -6,15 +6,40 @@ import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
 import 'add_journal_wizard.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late String _currentUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    // 1. Get the current user from AuthCubit
+    final authState = context.read<AuthCubit>().state;
+    
+    if (authState is AuthAuthenticated) {
+      _currentUserId = authState.user.email; // We use email as the unique ID
+      
+      // 2. Load entries specific to this user immediately
+      context.read<JournalCubit>().loadEntries(_currentUserId);
+    } else {
+      _currentUserId = ''; // Fallback (shouldn't happen if auth flow is correct)
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Get user object for personalized greeting
+    final user = (context.read<AuthCubit>().state as AuthAuthenticated).user;
+
     return Scaffold(
-      // connect RegistrationWizard to the AppBar icon 
       appBar: AppBar(
-        title: const Text('Smart Journal'),
+        title: Text('Welcome, ${user.firstName}'), // Personalized Title
         centerTitle: true,
         actions: [
           IconButton(
@@ -32,31 +57,28 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      // FAB navigates to the Add Screen
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const AddJournalWizard()),
+            // 3. PASS THE USER ID TO THE WIZARD
+            MaterialPageRoute(
+              builder: (_) => AddJournalWizard(userId: _currentUserId),
+            ),
           );
         },
         child: const Icon(Icons.add),
       ),
-      // BlocBuilder listens to state changes
       body: BlocBuilder<JournalCubit, JournalState>(
         builder: (context, state) {
-          
-          // State 1: Loading
           if (state is JournalLoading) {
             return const Center(child: CircularProgressIndicator());
           }
           
-          // State 2: Error
           if (state is JournalError) {
             return Center(child: Text(state.message));
           }
           
-          // State 3: Loaded (Success)
           if (state is JournalLoaded) {
             if (state.entries.isEmpty) {
               return const Center(
@@ -70,14 +92,13 @@ class HomeScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final entry = state.entries[index];
                 
-                // Card UI for each Journal Entry
                 return Card(
                   elevation: 2,
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                      child: const Text('😊'), // Placeholder for Mood Emoji
+                      child: Text(_getMoodEmoji(entry.mood)),
                     ),
                     title: Text(
                       entry.title,
@@ -102,28 +123,33 @@ class HomeScreen extends StatelessWidget {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
                       onPressed: () {
-                        // Delete action
-                        context.read<JournalCubit>().deleteEntry(entry.id);
+                        // 4. PASS USER ID TO DELETE (to reload list correctly)
+                        context.read<JournalCubit>().deleteEntry(entry.id, _currentUserId);
                       },
                     ),
-                    onTap: () {
-                      // Later: Add "View Details" screen here
-                    },
                   ),
                 );
               },
             );
           }
 
-          // State 4: Initial (Just in case)
           return const Center(child: CircularProgressIndicator());
         },
       ),
     );
   }
 
-  // Simple date formatter to avoid extra dependencies for now
   String _formatDate(DateTime date) {
     return "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}";
+  }
+  
+  String _getMoodEmoji(String mood) {
+    switch (mood) {
+      case 'Happy': return '😊';
+      case 'Sad': return '😢';
+      case 'Excited': return '🤩';
+      case 'Tired': return '😴';
+      default: return '😐';
+    }
   }
 }

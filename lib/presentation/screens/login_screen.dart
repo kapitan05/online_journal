@@ -54,11 +54,15 @@ class _LoginScreenState extends State<LoginScreen> {
               BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   if (state is AuthError) {
+                    // / Show the popup with error message
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
                   }
                 },
+                // If Error, Initial, or Unauthenticated -> Show Button. If Loading -> Show Loader
                 builder: (context, state) {
-                  if (state is AuthLoading) return const CircularProgressIndicator();
+                  if (state is AuthLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
                   
                   return SizedBox(
                     width: double.infinity,

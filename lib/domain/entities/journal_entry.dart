@@ -2,6 +2,7 @@ class JournalEntry {
   final String id;
   final String title;
   final String content;
+  final String userId;
   final DateTime date;
   final String mood;
   final String? imagePath;
@@ -13,5 +14,6 @@ class JournalEntry {
     required this.date,
     required this.mood,
     this.imagePath,
+    required this.userId,
   });
 }

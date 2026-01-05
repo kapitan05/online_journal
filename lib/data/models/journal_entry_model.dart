@@ -23,12 +23,16 @@ class JournalEntryModel extends HiveObject {
   @HiveField(5)
   final String? imagePath;
 
+  @HiveField(6) 
+  final String userId;
+
   JournalEntryModel({
     required this.id,
     required this.title,
     required this.content,
     required this.date,
     required this.mood,
+    required this.userId,
     this.imagePath,
   });
 
@@ -41,6 +45,7 @@ class JournalEntryModel extends HiveObject {
       date: date,
       mood: mood,
       imagePath: imagePath,
+      userId: userId,
     );
   }
 
@@ -53,6 +58,7 @@ class JournalEntryModel extends HiveObject {
       date: entry.date,
       mood: entry.mood,
       imagePath: entry.imagePath,
+      userId: entry.userId,
     );
   }
 }

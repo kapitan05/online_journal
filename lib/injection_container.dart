@@ -7,7 +7,6 @@ import 'presentation/cubit/journal_cubit.dart';
 import 'data/models/journal_entry_model.dart';
 import 'data/models/user_profile_model.dart';
 import 'presentation/cubit/auth_cubit.dart';
-import 'data/repositories/user_repository.dart';
 
 final sl = GetIt.instance;
 

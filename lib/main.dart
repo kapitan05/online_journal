@@ -15,6 +15,9 @@ void main() async {
 
   await Hive.initFlutter();
 
+  // For development: Clear existing boxes to avoid stale data issues
+  // await Hive.deleteBoxFromDisk('journalBox');
+
   // Register Adapters for Hive models
   Hive.registerAdapter(JournalEntryModelAdapter());
   Hive.registerAdapter(UserProfileModelAdapter());
@@ -34,7 +37,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
       return MultiBlocProvider( // MultiBlocProvider because we have multiple cubits
             providers: [
-              BlocProvider(create: (_) => di.sl<JournalCubit>()..loadEntries()),
+              BlocProvider(create: (_) => di.sl<JournalCubit>()),
               // Load AuthCubit and check status immediately by calling checkAuthStatus
               BlocProvider(create: (_) => di.sl<AuthCubit>()..checkAuthStatus()),
             ],

@@ -11,15 +11,13 @@ class HiveJournalRepository implements JournalRepository {
   HiveJournalRepository(this.box);
 
   @override
-  Future<List<JournalEntry>> getEntries() async {
-    // 3. Use 'box' directly (no need to await openBox)
-    final entries = box.values.map((model) => model.toEntity()).toList();
-    
-    // Sort by date, newest first
-    entries.sort((a, b) => b.date.compareTo(a.date));
-    
-    return entries;
-  }
+  Future<List<JournalEntry>> getEntries(String userId) async {
+      return box.values
+          .where((entry) => entry.userId == userId) // so to filter by userId entries for specific user
+          .map((model) => model.toEntity())
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
+    }
 
   // NOTE: Ensure your Interface uses 'saveEntry' or 'addEntry'. 
   // I matched this to your previous Cubit code which used 'saveEntry'.
