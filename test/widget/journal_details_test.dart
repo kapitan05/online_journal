@@ -4,7 +4,8 @@ import 'package:online_journal_local/domain/entities/journal_entry.dart';
 import 'package:online_journal_local/presentation/screens/journal_details_screen.dart';
 
 void main() {
-  testWidgets('JournalDetailsScreen displays entry details correctly', (WidgetTester tester) async {
+  testWidgets('JournalDetailsScreen displays entry details correctly',
+      (WidgetTester tester) async {
     // 1. Create a dummy entry
     final testEntry = JournalEntry(
       id: '123',
@@ -22,13 +23,13 @@ void main() {
     ));
 
     // 3. Assertions (Check if things exist)
-    
+
     // Check Title
     expect(find.text('My Widget Test'), findsOneWidget);
-    
+
     // Check Content
     expect(find.text('Testing is important'), findsOneWidget);
-    
+
     // Check Mood Emoji (Happy = 😊)
     expect(find.text('😊'), findsOneWidget);
 

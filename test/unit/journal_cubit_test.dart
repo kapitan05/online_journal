@@ -43,13 +43,15 @@ void main() {
       'emits [JournalLoading, JournalLoaded] when entries are loaded successfully',
       build: () {
         // Arrange: Tell the mock what to return when called
-        when(() => mockRepo.getEntries(any())).thenAnswer((_) async => [testEntry]);
+        when(() => mockRepo.getEntries(any()))
+            .thenAnswer((_) async => [testEntry]);
         return cubit;
       },
       act: (cubit) => cubit.loadEntries('user1'),
       expect: () => [
         isA<JournalLoading>(),
-        isA<JournalLoaded>().having((state) => state.entries.first, 'entry', testEntry),
+        isA<JournalLoaded>()
+            .having((state) => state.entries.first, 'entry', testEntry),
       ],
     );
 
@@ -57,7 +59,8 @@ void main() {
     blocTest<JournalCubit, JournalState>(
       'emits [JournalLoading, JournalError] when loading fails',
       build: () {
-        when(() => mockRepo.getEntries(any())).thenThrow(Exception('Database error'));
+        when(() => mockRepo.getEntries(any()))
+            .thenThrow(Exception('Database error'));
         return cubit;
       },
       act: (cubit) => cubit.loadEntries('user1'),
