@@ -6,6 +6,7 @@ import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
 import 'add_journal_wizard.dart';
+import 'journal_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -104,20 +105,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text('No entries yet. Start writing! ✍️'),
               );
             }
-
-            return ListView.builder(
+          // Show list of entries
+          return ListView.builder(
               itemCount: state.entries.length,
               padding: const EdgeInsets.all(8),
               itemBuilder: (context, index) {
                 final entry = state.entries[index];
-                
+                // Each entry card with Hero animation for mood emoji
                 return Card(
                   elevation: 2,
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.blueAccent.withOpacity(0.2),
-                      child: Text(_getMoodEmoji(entry.mood)),
+                    // --- THE HERO ANIMATION SOURCE ---
+                    leading: Hero(
+                      tag: 'mood_${entry.id}', // Unique ID links the two screens
+                      child: CircleAvatar(
+                        // ignore: deprecated_member_use
+                        backgroundColor: Colors.blueAccent.withOpacity(0.2),
+                        child: Text(_getMoodEmoji(entry.mood)),
+                      ),
                     ),
                     title: Text(
                       entry.title,
@@ -139,10 +145,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
+                    // Navigation on Tap
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => JournalDetailsScreen(entry: entry),
+                        ),
+                      );
+                    },
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
                       onPressed: () {
-                        // 4. PASS USER ID TO DELETE (to reload list correctly)
                         context.read<JournalCubit>().deleteEntry(entry.id, _currentUserId);
                       },
                     ),
