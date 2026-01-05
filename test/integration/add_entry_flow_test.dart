@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:online_journal_local/domain/entities/journal_entry.dart';
 import 'package:online_journal_local/domain/repositories/journal_repository.dart';
 import 'package:online_journal_local/presentation/cubit/journal_cubit.dart';
 import 'package:online_journal_local/presentation/screens/home_screen.dart';
@@ -9,25 +10,36 @@ import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
 import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import 'package:online_journal_local/domain/entities/user_profile.dart';
 
+// Mocks
 class MockJournalRepository extends Mock implements JournalRepository {}
 
 class MockAuthCubit extends Mock implements AuthCubit {}
+
+// Fake Entry for fallback
+class FakeJournalEntry extends Fake implements JournalEntry {}
 
 void main() {
   late MockJournalRepository mockRepo;
   late MockAuthCubit mockAuthCubit;
   late JournalCubit journalCubit;
 
+  setUpAll(() {
+    // Register fallback values for Mocktail if needed
+    registerFallbackValue(FakeJournalEntry());
+  });
+
   setUp(() {
     mockRepo = MockJournalRepository();
     mockAuthCubit = MockAuthCubit();
     journalCubit = JournalCubit(mockRepo);
 
-    // Default Stubs
+    // Stub: Get Entries returns empty list initially
     when(() => mockRepo.getEntries(any())).thenAnswer((_) async => []);
-    when(() => mockRepo.addEntry(any())).thenAnswer((_) async => {});
 
-    // Mock Auth State to be 'Authenticated' so HomeScreen renders
+    // Stub: Add Entry returns void
+    when(() => mockRepo.addEntry(any())).thenAnswer((_) async {});
+
+    // Stub: Auth State is Authenticated (Required for HomeScreen to load)
     when(() => mockAuthCubit.state).thenReturn(AuthAuthenticated(UserProfile(
         firstName: 'Test',
         lastName: 'User',
@@ -36,11 +48,22 @@ void main() {
         street: '',
         city: '',
         zipCode: '')));
+
+    // Stub: Stream for AuthCubit (Crucial if any widget listens to the stream)
+    when(() => mockAuthCubit.stream).thenAnswer((_) => const Stream.empty());
+  });
+
+  tearDown(() {
+    journalCubit.close();
   });
 
   testWidgets('Integration Flow: Add Entry Wizard Navigation',
       (WidgetTester tester) async {
-    // 1. Load HomeScreen wrapped in Providers
+    // 1. Set Screen Size (Phone dimensions) to ensure buttons are visible
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 3.0;
+
+    // 2. Load HomeScreen
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
@@ -51,44 +74,63 @@ void main() {
       ),
     );
 
-    // 2. Verify we are on Home Screen (Check for FAB)
+    // 3. Verify on Home Screen & Tap FAB
     final fabFinder = find.byType(FloatingActionButton);
     expect(fabFinder, findsOneWidget);
-
-    // 3. Tap FAB to open Wizard
     await tester.tap(fabFinder);
-    await tester.pumpAndSettle(); // Wait for animation
+    await tester.pumpAndSettle(); // Wait for navigation animation
 
-    // 4. Verify Wizard Opened (Check for "Basics" title)
+    // --- STEP 1: BASICS ---
     expect(find.text('Basics'), findsOneWidget);
 
-    // 5. Fill Step 1 (Title)
-    await tester.enterText(
-        find.widgetWithText(TextFormField, 'Entry Title'), 'Integration Title');
+    // Enter Title
+    final titleField = find.widgetWithText(TextFormField, 'Entry Title');
+    await tester.enterText(titleField, 'Integration Title');
     await tester.pump();
 
-    // 6. Tap Next
-    await tester.tap(find.text('NEXT'));
+    // Tap Next (Scroll to it first to be safe)
+    final nextBtn1 = find.text('NEXT');
+    await tester.ensureVisible(nextBtn1);
+    await tester.tap(nextBtn1);
     await tester.pumpAndSettle();
 
-    // 7. Verify Step 2 (Thoughts)
-    expect(find.text('Thoughts'), findsOneWidget);
-    await tester.enterText(find.widgetWithText(TextFormField, 'What happened?'),
-        'Integration Content');
+    // --- STEP 2: THOUGHTS ---
+    // Verify using CONTENT label, not header (Headers are always visible in horizontal steppers)
+    expect(find.text('What happened?'), findsOneWidget);
 
-    // 8. Tap Next
-    await tester.tap(find.text('NEXT'));
+    // Enter Content
+    final contentField = find.widgetWithText(TextFormField, 'What happened?');
+    await tester.enterText(contentField, 'Integration Content');
+    await tester.pump();
+
+    // Tap Next
+    final nextBtn2 = find.text('NEXT');
+    await tester.ensureVisible(nextBtn2);
+    await tester.tap(nextBtn2);
     await tester.pumpAndSettle();
 
-    // 9. Verify Step 3 (Review) & Save
-    expect(find.text('Review'), findsOneWidget);
-    await tester.tap(find.text('FINISH & SAVE'));
-    await tester.pumpAndSettle(); // Wait for dialog close
+    // --- STEP 3: REVIEW ---
+    expect(find.text('Review'), findsOneWidget); // Header
+    expect(find.text('Summary:'), findsOneWidget); // Content unique to Step 3
 
-    // 10. Verify we are back on Home Screen
+    // Tap Finish
+    final finishBtn = find.text('FINISH & SAVE');
+    await tester.ensureVisible(finishBtn);
+    await tester.tap(finishBtn);
+    await tester.pumpAndSettle();
+
+    // --- VERIFICATION ---
+    // 1. Check we are back on Home Screen
     expect(find.byType(HomeScreen), findsOneWidget);
 
-    // 11. Verify Repository 'addEntry' was actually called!
-    verify(() => mockRepo.addEntry(any())).called(1);
+    // 2. Check Repository was called with correct data
+    verify(() => mockRepo.addEntry(any(
+            that: isA<JournalEntry>()
+                .having((e) => e.title, 'title', 'Integration Title')
+                .having((e) => e.content, 'content', 'Integration Content'))))
+        .called(1);
+
+    // Reset view size after test
+    addTearDown(tester.view.resetPhysicalSize);
   });
 }
