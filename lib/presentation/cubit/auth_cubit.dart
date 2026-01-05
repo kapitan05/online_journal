@@ -1,20 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../data/repositories/user_repository.dart';
 
-// States to represent authentication status so toggle UI accordingly
-abstract class AuthState {}
-class AuthInitial extends AuthState {}
-class AuthLoading extends AuthState {}
-class AuthAuthenticated extends AuthState {
-  final UserProfile user;
-  AuthAuthenticated(this.user);
-}
-class AuthUnauthenticated extends AuthState {}
-class AuthError extends AuthState {
-  final String message;
-  AuthError(this.message);
-}
 
 // Logic 
 class AuthCubit extends Cubit<AuthState> {
@@ -22,19 +10,22 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this.repository) : super(AuthInitial());
 
-  // Check on App Start
   Future<void> checkAuthStatus() async {
-    final isLoggedIn = await repository.isLoggedIn();
-    if (isLoggedIn) {
-       // Ideally, fetch the actual user object here
-       emit(AuthAuthenticated(UserProfile(
-         firstName: 'User', lastName: '', email: '', password: '', 
-         street: '', city: '', zipCode: ''
-       ))); 
-    } else {
-      emit(AuthUnauthenticated());
+      try {
+        // Fetch the REAL user from the repository
+        final currentUser = await repository.getCurrentUser();
+
+        if (currentUser != null) {
+          emit(AuthAuthenticated(currentUser));
+        } else {
+          emit(AuthUnauthenticated());
+        }
+      } catch (e) {
+        // If something goes wrong (data corruption etc ) -> logout
+        await repository.logout();
+        emit(AuthUnauthenticated());
+      }
     }
-  }
 
   Future<void> signUp(UserProfile user) async {
     emit(AuthLoading());
@@ -62,4 +53,10 @@ class AuthCubit extends Cubit<AuthState> {
     await repository.logout();
     emit(AuthUnauthenticated());
   }
+
+  // Check if email already exists
+  Future<bool> checkEmailExists(String email) async {
+    return await repository.userExists(email);
+  }
+
 }

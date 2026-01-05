@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
+import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import 'package:online_journal_local/presentation/screens/registration_wizard.dart';
 import '../cubit/journal_cubit.dart';
 import '../cubit/journal_state.dart';
@@ -14,7 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late String _currentUserId;
+  String _currentUserId = "";
 
   @override
   void initState() {
@@ -34,8 +35,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    // Get State safely
+    final authState = context.read<AuthCubit>().state;
+    
+    // Handle the "Just in case" scenario where state isn't ready
+    // (This prevents the Red/Black screen crash)
+
+    if (authState is! AuthAuthenticated) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     // Get user object for personalized greeting
-    final user = (context.read<AuthCubit>().state as AuthAuthenticated).user;
+    final user = authState.user;
 
     return Scaffold(
       appBar: AppBar(
@@ -59,13 +71,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            // 3. PASS THE USER ID TO THE WIZARD
-            MaterialPageRoute(
-              builder: (_) => AddJournalWizard(userId: _currentUserId),
-            ),
-          );
+        // Ensure we pass the valid _currentUserId
+        // ??? handles the split-second delay between "Logged In" and "Data Ready," ensuring _currentUserId 
+        // is never accessed in an invalid state. ??
+          if (_currentUserId.isNotEmpty) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddJournalWizard(userId: _currentUserId),
+              ),
+            );
+          }
         },
         child: const Icon(Icons.add),
       ),

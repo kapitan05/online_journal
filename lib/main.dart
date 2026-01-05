@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:online_journal_local/data/models/user_profile_model.dart';
 import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
+import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import 'package:online_journal_local/presentation/screens/login_screen.dart';
 
 import 'injection_container.dart' as di; 
@@ -52,8 +53,15 @@ class MainApp extends StatelessWidget {
                   } else if (state is AuthUnauthenticated) {
                     return const LoginScreen();
                   }
-                  // While checking session
-                  return const Scaffold(body: Center(child: CircularProgressIndicator()));
+                  // Show loading indicator while checking auth status
+                  if (state is AuthInitial) {
+                    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+                  }
+
+                // FOR ALL OTHER STATES (Unauthenticated, Loading, Error) -> Show Login
+                // We let LoginScreen handle the Loading/Error UI internally.
+                // This prevents LoginScreen from being unmounted during the sign-in process.
+                  return const LoginScreen();
                 },
               ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import '../cubit/auth_cubit.dart';
 import 'registration_wizard.dart';
 
@@ -54,8 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
               BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   if (state is AuthError) {
-                    // / Show the popup with error message
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+                  } 
+                  // If login succeeds, clear this screen so Home becomes visible
+                  else if (state is AuthAuthenticated) {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
                   }
                 },
                 // If Error, Initial, or Unauthenticated -> Show Button. If Loading -> Show Loader

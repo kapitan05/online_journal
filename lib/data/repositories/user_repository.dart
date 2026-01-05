@@ -8,7 +8,7 @@ import '../../domain/entities/user_profile.dart';
 
 class UserRepository {
 
-final Box<UserProfileModel> _usersBox; // The "Database" of all users
+  final Box<UserProfileModel> _usersBox; // The "Database" of all users
   final Box _sessionBox; // To remember who is currently logged in 
 
   UserRepository(this._usersBox, this._sessionBox);
@@ -50,4 +50,25 @@ final Box<UserProfileModel> _usersBox; // The "Database" of all users
   Future<void> logout() async {
     await _sessionBox.delete('current_user_email');
   }
+
+  // Get current logged-in user
+  Future<bool> userExists(String email) async {
+    return _usersBox.containsKey(email);
+  }
+
+  // Get current logged-in user
+  Future<UserProfile?> getCurrentUser() async {
+    // Get the email from the session box
+    final email = _sessionBox.get('current_user_email');
+    
+    // If no email is saved, no one is logged in
+    if (email == null) return null;
+
+    // Find the user in the database
+    final userModel = _usersBox.get(email);
+    
+    // Return the entity
+    return userModel?.toEntity();
+  }
+
 }
