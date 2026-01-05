@@ -1,0 +1,41 @@
+name: Smart Journal CI
+
+# This triggers the workflow on every push to the main branch
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the code from the repository
+      - uses: actions/checkout@v4
+
+      # 2. Install Flutter on the GitHub server
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      # 3. Download dependencies
+      - name: Install Dependencies
+        run: flutter pub get
+
+      # 4. Generate Hive Adapters
+      - name: Run Build Runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # 5. Check Code Formatting 
+      - name: Verify Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      # 6. Static Code Analysis
+      - name: Analyze Code
+        run: flutter analyze
+
+      # 7. Run Tests
+      - name: Run Widget & Unit Tests
+        run: flutter test
