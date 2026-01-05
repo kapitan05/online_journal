@@ -12,14 +12,16 @@ class HiveJournalRepository implements JournalRepository {
 
   @override
   Future<List<JournalEntry>> getEntries(String userId) async {
-      return box.values
-          .where((entry) => entry.userId == userId) // so to filter by userId entries for specific user
-          .map((model) => model.toEntity())
-          .toList()
-        ..sort((a, b) => b.date.compareTo(a.date));
-    }
+    return box.values
+        .where((entry) =>
+            entry.userId ==
+            userId) // so to filter by userId entries for specific user
+        .map((model) => model.toEntity())
+        .toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
+  }
 
-  // NOTE: Ensure your Interface uses 'saveEntry' or 'addEntry'. 
+  // NOTE: Ensure your Interface uses 'saveEntry' or 'addEntry'.
   // I matched this to your previous Cubit code which used 'saveEntry'.
   @override
   Future<void> addEntry(JournalEntry entry) async {

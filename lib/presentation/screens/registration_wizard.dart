@@ -1,5 +1,5 @@
-import 'dart:io'; 
-import 'package:flutter/material.dart'; 
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:online_journal_local/presentation/cubit/auth_cubit.dart';
@@ -68,7 +68,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
       }
     }
   }
-  
+
   // Show Image Source Action Sheet
   void _showImageSourceActionSheet(BuildContext context) {
     // Check if we are on a mobile device
@@ -134,7 +134,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
   Future<void> _onStepContinue() async {
     bool isLastStep = (_currentStep == 2);
 
-    // FINAL SUBMIT 
+    // FINAL SUBMIT
     if (isLastStep) {
       final newUser = UserProfile(
         firstName: _firstNameCtrl.text,
@@ -149,21 +149,21 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
 
       context.read<AuthCubit>().signUp(newUser);
       // Don't pop here; BlocListener in the build method handles the success/fail UI
-    } 
-    
+    }
+
     // Check Email
     else if (_currentStep == 0) {
       // Validate Form UI
       if (_personalInfoKey.currentState!.validate()) {
-        
         // Show Loading Spinner
-        setState(() => _isCheckingEmail = true); 
+        setState(() => _isCheckingEmail = true);
 
         //  Check DB (Async)
-        final exists = await context.read<AuthCubit>().checkEmailExists(_emailCtrl.text);
-        
+        final exists =
+            await context.read<AuthCubit>().checkEmailExists(_emailCtrl.text);
+
         // Safety Check: If user left screen, stop.
-        if (!mounted) return; 
+        if (!mounted) return;
 
         // Hide Loading Spinner
         setState(() => _isCheckingEmail = false);
@@ -175,8 +175,8 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
           setState(() => _currentStep += 1);
         }
       }
-    } 
-    
+    }
+
     // Address Step
     else {
       if (_addressKey.currentState!.validate()) {
@@ -221,7 +221,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
               padding: const EdgeInsets.only(top: 20),
               child: Row(
                 children: [
-                  if (_isCheckingEmail) 
+                  if (_isCheckingEmail)
                     const Padding(
                       padding: EdgeInsets.only(right: 16.0),
                       child: CircularProgressIndicator(),
@@ -231,7 +231,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
                       onPressed: details.onStepContinue,
                       child: Text(_currentStep == 2 ? 'SUBMIT' : 'NEXT'),
                     ),
-                  
+
                   const SizedBox(width: 12),
                   // Only show Back/Cancel if not loading
                   if (!_isCheckingEmail)
@@ -260,7 +260,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
               ),
             ),
 
-            // STEP 2: Address Info 
+            // STEP 2: Address Info
             Step(
               title: const Text('Address'),
               isActive: _currentStep >= 1,
@@ -273,7 +273,7 @@ class _RegistrationWizardState extends State<RegistrationWizard> {
               ),
             ),
 
-            // STEP 3: Review 
+            // STEP 3: Review
             Step(
               title: const Text('Review'),
               isActive: _currentStep >= 2,

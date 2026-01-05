@@ -22,7 +22,8 @@ class JournalBasicsStep extends StatelessWidget {
           hintText: 'e.g., A rainy Tuesday',
           border: OutlineInputBorder(),
         ),
-        validator: (val) => val == null || val.isEmpty ? 'Title is required' : null,
+        validator: (val) =>
+            val == null || val.isEmpty ? 'Title is required' : null,
       ),
     );
   }

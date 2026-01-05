@@ -23,7 +23,7 @@ class JournalEntryModel extends HiveObject {
   @HiveField(5)
   final String? imagePath;
 
-  @HiveField(6) 
+  @HiveField(6)
   final String userId;
 
   JournalEntryModel({

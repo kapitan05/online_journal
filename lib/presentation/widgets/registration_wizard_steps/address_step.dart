@@ -25,7 +25,8 @@ class AddressStep extends StatelessWidget {
         children: [
           TextFormField(
             controller: streetCtrl,
-            decoration: const InputDecoration(labelText: 'Street Address', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+                labelText: 'Street Address', border: OutlineInputBorder()),
             validator: (v) => v!.isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 10),
@@ -35,7 +36,8 @@ class AddressStep extends StatelessWidget {
                 flex: 2,
                 child: TextFormField(
                   controller: cityCtrl,
-                  decoration: const InputDecoration(labelText: 'City', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                      labelText: 'City', border: OutlineInputBorder()),
                   validator: (v) => v!.isEmpty ? 'Required' : null,
                 ),
               ),
@@ -45,7 +47,8 @@ class AddressStep extends StatelessWidget {
                 child: TextFormField(
                   controller: zipCtrl,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Zip', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                      labelText: 'Zip', border: OutlineInputBorder()),
                   validator: (v) {
                     if (v!.isEmpty) return 'Required';
                     if (!zipRegex.hasMatch(v)) return '5 Digits';

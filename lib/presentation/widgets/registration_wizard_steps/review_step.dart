@@ -26,10 +26,9 @@ class ReviewStep extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300)
-      ),
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey.shade300)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,7 +39,8 @@ class ReviewStep extends StatelessWidget {
               backgroundImage: selectedImagePath != null
                   ? FileImage(File(selectedImagePath!))
                   : null,
-              child: selectedImagePath == null ? const Icon(Icons.person) : null,
+              child:
+                  selectedImagePath == null ? const Icon(Icons.person) : null,
             ),
           ),
           const SizedBox(height: 10),
@@ -50,7 +50,8 @@ class ReviewStep extends StatelessWidget {
           _buildReviewRow('Address:', street),
           _buildReviewRow('City:', '$city, $zip'),
           const SizedBox(height: 10),
-          const Text('Please verify information before submitting.', style: TextStyle(color: Colors.grey, fontSize: 12)),
+          const Text('Please verify information before submitting.',
+              style: TextStyle(color: Colors.grey, fontSize: 12)),
         ],
       ),
     );

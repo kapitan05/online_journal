@@ -19,9 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthCubit>().signIn(
-        _emailCtrl.text.trim(),
-        _passCtrl.text.trim(),
-      );
+            _emailCtrl.text.trim(),
+            _passCtrl.text.trim(),
+          );
     }
   }
 
@@ -35,28 +35,32 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Smart Journal', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+              const Text('Smart Journal',
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
               const SizedBox(height: 40),
               TextFormField(
                 controller: _emailCtrl,
-                decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                    labelText: 'Email', border: OutlineInputBorder()),
                 validator: (v) => v!.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _passCtrl,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                    labelText: 'Password', border: OutlineInputBorder()),
                 validator: (v) => v!.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 24),
-              
+
               // Login Button with State Handling
               BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   if (state is AuthError) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-                  } 
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(state.message)));
+                  }
                   // If login succeeds, clear this screen so Home becomes visible
                   else if (state is AuthAuthenticated) {
                     Navigator.of(context).popUntil((route) => route.isFirst);
@@ -65,21 +69,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 // If Error, Initial, or Unauthenticated -> Show Button. If Loading -> Show Loader
                 builder: (context, state) {
                   if (state is AuthLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
                   return SizedBox(
                     width: double.infinity,
                     height: 50,
-                    child: FilledButton(onPressed: _login, child: const Text('SIGN IN')),
+                    child: FilledButton(
+                        onPressed: _login, child: const Text('SIGN IN')),
                   );
                 },
               ),
-              
+
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RegistrationWizard()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const RegistrationWizard()));
                 },
                 child: const Text('Create an Account'),
               ),

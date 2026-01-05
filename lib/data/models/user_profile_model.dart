@@ -23,7 +23,7 @@ class UserProfileModel extends HiveObject {
   @HiveField(5)
   final String zipCode;
 
-  @HiveField(6) 
+  @HiveField(6)
   final String password;
 
   @HiveField(7)
@@ -42,25 +42,25 @@ class UserProfileModel extends HiveObject {
 
   // Mapper: Model -> Entity
   UserProfile toEntity() => UserProfile(
-    firstName: firstName,
-    lastName: lastName,
-    email: email,
-    street: street,
-    city: city,
-    zipCode: zipCode,
-    password: password,
-    profileImagePath: profileImagePath,
-  );
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        street: street,
+        city: city,
+        zipCode: zipCode,
+        password: password,
+        profileImagePath: profileImagePath,
+      );
 
   // Mapper: Entity -> Model
   factory UserProfileModel.fromEntity(UserProfile user) => UserProfileModel(
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    street: user.street,
-    city: user.city,
-    zipCode: user.zipCode,
-    password: user.password,
-    profileImagePath: user.profileImagePath,
-  );
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        street: user.street,
+        city: user.city,
+        zipCode: user.zipCode,
+        password: user.password,
+        profileImagePath: user.profileImagePath,
+      );
 }

@@ -22,7 +22,8 @@ class JournalReviewStep extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('How did you feel?', style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text('How did you feel?',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         DropdownButton<String>(
           value: selectedMood,
           isExpanded: true,
@@ -39,12 +40,9 @@ class JournalReviewStep extends StatelessWidget {
         const Text('Summary:', style: TextStyle(color: Colors.grey)),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(
-            content, 
-            maxLines: 2, 
-            overflow: TextOverflow.ellipsis
-          ),
+          title:
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(content, maxLines: 2, overflow: TextOverflow.ellipsis),
         ),
       ],
     );

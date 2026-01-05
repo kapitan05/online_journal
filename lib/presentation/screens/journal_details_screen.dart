@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/journal_entry.dart';
 // import 'package:intl/intl.dart'; // Add to pubspec.yaml if needed, or use simple formatting
 
-
 // animation for mood emoji + journal details
 class JournalDetailsScreen extends StatelessWidget {
   final JournalEntry entry;
@@ -23,7 +22,7 @@ class JournalDetailsScreen extends StatelessWidget {
             // --- THE HERO ANIMATION DESTINATION ---
             // The tag MUST match the one in HomeScreen
             Hero(
-              tag: 'mood_${entry.id}', 
+              tag: 'mood_${entry.id}',
               child: Container(
                 width: 100,
                 height: 100,
@@ -39,26 +38,26 @@ class JournalDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             Text(
               entry.title,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             Text(
               "${entry.date.day}/${entry.date.month}/${entry.date.year} ${entry.date.hour}:${entry.date.minute.toString().padLeft(2, '0')}",
               style: TextStyle(color: Colors.grey[600]),
             ),
-            
+
             const SizedBox(height: 24),
             const Divider(),
             const SizedBox(height: 24),
-            
+
             // Content text with a slight fade-in animation (Bonus Points!)
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
@@ -82,11 +81,16 @@ class JournalDetailsScreen extends StatelessWidget {
 
   String _getMoodEmoji(String mood) {
     switch (mood) {
-      case 'Happy': return '😊';
-      case 'Sad': return '😢';
-      case 'Excited': return '🤩';
-      case 'Tired': return '😴';
-      default: return '😐';
+      case 'Happy':
+        return '😊';
+      case 'Sad':
+        return '😢';
+      case 'Excited':
+        return '🤩';
+      case 'Tired':
+        return '😴';
+      default:
+        return '😐';
     }
   }
 }

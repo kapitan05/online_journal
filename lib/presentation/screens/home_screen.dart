@@ -23,23 +23,23 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // 1. Get the current user from AuthCubit
     final authState = context.read<AuthCubit>().state;
-    
+
     if (authState is AuthAuthenticated) {
       _currentUserId = authState.user.email; // We use email as the unique ID
-      
+
       // 2. Load entries specific to this user immediately
       context.read<JournalCubit>().loadEntries(_currentUserId);
     } else {
-      _currentUserId = ''; // Fallback (shouldn't happen if auth flow is correct)
+      _currentUserId =
+          ''; // Fallback (shouldn't happen if auth flow is correct)
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     // Get State safely
     final authState = context.read<AuthCubit>().state;
-    
+
     // Handle the "Just in case" scenario where state isn't ready
     // (This prevents the Red/Black screen crash)
 
@@ -53,19 +53,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome, ${user.firstName}'),
-                centerTitle: true,
-                leading: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    backgroundImage: user.profileImagePath != null
-                        ? FileImage(File(user.profileImagePath!))
-                        : null,
-                    child: user.profileImagePath == null
-                        ? Text(user.firstName[0].toUpperCase()) // Initials if no image
-                        : null,
-                  ),
-                ),
+        centerTitle: true,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            backgroundImage: user.profileImagePath != null
+                ? FileImage(File(user.profileImagePath!))
+                : null,
+            child: user.profileImagePath == null
+                ? Text(user.firstName[0].toUpperCase()) // Initials if no image
+                : null,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -75,9 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-        // Ensure we pass the valid _currentUserId
-        // ??? handles the split-second delay between "Logged In" and "Data Ready," ensuring _currentUserId 
-        // is never accessed in an invalid state. ??
+          // Ensure we pass the valid _currentUserId
+          // ??? handles the split-second delay between "Logged In" and "Data Ready," ensuring _currentUserId
+          // is never accessed in an invalid state. ??
           if (_currentUserId.isNotEmpty) {
             Navigator.push(
               context,
@@ -94,19 +94,19 @@ class _HomeScreenState extends State<HomeScreen> {
           if (state is JournalLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          
+
           if (state is JournalError) {
             return Center(child: Text(state.message));
           }
-          
+
           if (state is JournalLoaded) {
             if (state.entries.isEmpty) {
               return const Center(
                 child: Text('No entries yet. Start writing! ✍️'),
               );
             }
-          // Show list of entries
-          return ListView.builder(
+            // Show list of entries
+            return ListView.builder(
               itemCount: state.entries.length,
               padding: const EdgeInsets.all(8),
               itemBuilder: (context, index) {
@@ -118,7 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ListTile(
                     // --- THE HERO ANIMATION SOURCE ---
                     leading: Hero(
-                      tag: 'mood_${entry.id}', // Unique ID links the two screens
+                      tag:
+                          'mood_${entry.id}', // Unique ID links the two screens
                       child: CircleAvatar(
                         // ignore: deprecated_member_use
                         backgroundColor: Colors.blueAccent.withOpacity(0.2),
@@ -141,7 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 4),
                         Text(
                           _formatDate(entry.date),
-                          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                          style:
+                              TextStyle(color: Colors.grey[600], fontSize: 12),
                         ),
                       ],
                     ),
@@ -157,7 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
                       onPressed: () {
-                        context.read<JournalCubit>().deleteEntry(entry.id, _currentUserId);
+                        context
+                            .read<JournalCubit>()
+                            .deleteEntry(entry.id, _currentUserId);
                       },
                     ),
                   ),
@@ -175,14 +179,19 @@ class _HomeScreenState extends State<HomeScreen> {
   String _formatDate(DateTime date) {
     return "${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}";
   }
-  
+
   String _getMoodEmoji(String mood) {
     switch (mood) {
-      case 'Happy': return '😊';
-      case 'Sad': return '😢';
-      case 'Excited': return '🤩';
-      case 'Tired': return '😴';
-      default: return '😐';
+      case 'Happy':
+        return '😊';
+      case 'Sad':
+        return '😢';
+      case 'Excited':
+        return '🤩';
+      case 'Tired':
+        return '😴';
+      default:
+        return '😐';
     }
   }
 }

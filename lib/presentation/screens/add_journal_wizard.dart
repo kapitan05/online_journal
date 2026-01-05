@@ -17,7 +17,7 @@ class AddJournalWizard extends StatefulWidget {
 
 class _AddJournalWizardState extends State<AddJournalWizard> {
   int _currentStep = 0;
-  
+
   // Form Keys for validation
   final _step1Key = GlobalKey<FormState>();
   final _step2Key = GlobalKey<FormState>();
@@ -25,7 +25,7 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
   // Controllers
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
-  
+
   // State for Step 3
   String _selectedMood = 'Neutral';
   final List<String> _moods = ['Happy', 'Neutral', 'Sad', 'Excited', 'Tired'];
@@ -44,11 +44,11 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
     if (isLastStep) {
       // FINAL STEP: Save Data
       context.read<JournalCubit>().addEntry(
-        _titleController.text,
-        _contentController.text,
-        _selectedMood,
-        widget.userId, // Pass the userId
-      );
+            _titleController.text,
+            _contentController.text,
+            _selectedMood,
+            widget.userId, // Pass the userId
+          );
       Navigator.pop(context); // Close the wizard
     } else {
       // NORMAL STEP: Validate and Move Next

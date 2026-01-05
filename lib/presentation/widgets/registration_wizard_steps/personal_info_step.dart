@@ -46,25 +46,31 @@ class PersonalInfoStep extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text('Tap to add photo', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          const Text('Tap to add photo',
+              style: TextStyle(fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 20),
-          
+
           // user details fields
           TextFormField(
             controller: firstNameCtrl,
-            decoration: const InputDecoration(labelText: 'First Name', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+                labelText: 'First Name', border: OutlineInputBorder()),
             validator: (v) => v!.length < 2 ? 'Name too short' : null,
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: lastNameCtrl,
-            decoration: const InputDecoration(labelText: 'Last Name', border: OutlineInputBorder()),
+            decoration: const InputDecoration(
+                labelText: 'Last Name', border: OutlineInputBorder()),
             validator: (v) => v!.isEmpty ? 'Last Name required' : null,
           ),
           const SizedBox(height: 10),
           TextFormField(
             controller: emailCtrl,
-            decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder(), hintText: 'student@example.com'),
+            decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+                hintText: 'student@example.com'),
             keyboardType: TextInputType.emailAddress,
             validator: (v) {
               if (v == null || v.isEmpty) return 'Email required';
@@ -76,7 +82,7 @@ class PersonalInfoStep extends StatelessWidget {
           // password field
           TextFormField(
             controller: passwordCtrl,
-            obscureText: true, // Hide text 
+            obscureText: true, // Hide text
             decoration: const InputDecoration(labelText: 'Password'),
             validator: (v) => v!.length < 6 ? 'Min 6 characters' : null,
           ),

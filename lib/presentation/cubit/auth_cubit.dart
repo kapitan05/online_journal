@@ -3,29 +3,28 @@ import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../data/repositories/hive_user_repository.dart';
 
-
-// Logic 
+// Logic
 class AuthCubit extends Cubit<AuthState> {
   final HiveUserRepository repository;
 
   AuthCubit(this.repository) : super(AuthInitial());
 
   Future<void> checkAuthStatus() async {
-      try {
-        // Fetch the REAL user from the repository
-        final currentUser = await repository.getCurrentUser();
+    try {
+      // Fetch the REAL user from the repository
+      final currentUser = await repository.getCurrentUser();
 
-        if (currentUser != null) {
-          emit(AuthAuthenticated(currentUser));
-        } else {
-          emit(AuthUnauthenticated());
-        }
-      } catch (e) {
-        // If something goes wrong (data corruption etc ) -> logout
-        await repository.logout();
+      if (currentUser != null) {
+        emit(AuthAuthenticated(currentUser));
+      } else {
         emit(AuthUnauthenticated());
       }
+    } catch (e) {
+      // If something goes wrong (data corruption etc ) -> logout
+      await repository.logout();
+      emit(AuthUnauthenticated());
     }
+  }
 
   Future<void> signUp(UserProfile user) async {
     emit(AuthLoading());
@@ -58,5 +57,4 @@ class AuthCubit extends Cubit<AuthState> {
   Future<bool> checkEmailExists(String email) async {
     return await repository.userExists(email);
   }
-
 }

@@ -20,7 +20,8 @@ class JournalCubit extends Cubit<JournalState> {
     }
   }
 
-  Future<void> addEntry(String title, String content, String mood, String userId) async {
+  Future<void> addEntry(
+      String title, String content, String mood, String userId) async {
     try {
       final newEntry = JournalEntry(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -32,13 +33,13 @@ class JournalCubit extends Cubit<JournalState> {
       );
 
       await repository.addEntry(newEntry);
-      
-      loadEntries(userId); 
+
+      loadEntries(userId);
     } catch (e) {
       emit(JournalError("Failed to add entry: $e"));
     }
   }
-  
+
   // 3. Delete an entry
   Future<void> deleteEntry(String id, String userId) async {
     try {

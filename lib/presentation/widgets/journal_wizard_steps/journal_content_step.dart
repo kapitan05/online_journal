@@ -24,7 +24,8 @@ class JournalContentStep extends StatelessWidget {
           border: OutlineInputBorder(),
           alignLabelWithHint: true,
         ),
-        validator: (val) => val == null || val.isEmpty ? 'Content cannot be empty' : null,
+        validator: (val) =>
+            val == null || val.isEmpty ? 'Content cannot be empty' : null,
       ),
     );
   }
