@@ -7,9 +7,9 @@ import 'package:online_journal_local/presentation/cubit/auth_state.dart';
 import '../../domain/entities/user_profile.dart';
 
 // Import the step widgets
-import 'package:online_journal_local/presentation/widgets/wizard_steps/personal_info_step.dart';
-import 'package:online_journal_local/presentation/widgets/wizard_steps/address_step.dart';
-import 'package:online_journal_local/presentation/widgets/wizard_steps/review_step.dart';
+import 'package:online_journal_local/presentation/widgets/registration_wizard_steps/personal_info_step.dart';
+import 'package:online_journal_local/presentation/widgets/registration_wizard_steps/address_step.dart';
+import 'package:online_journal_local/presentation/widgets/registration_wizard_steps/review_step.dart';
 
 class RegistrationWizard extends StatefulWidget {
   const RegistrationWizard({super.key});

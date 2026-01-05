@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/journal_cubit.dart';
 
-class AddJournalWizard extends StatefulWidget {
+// Import the widgets
+import 'package:online_journal_local/presentation/widgets/journal_wizard_steps/journal_basics_step.dart';
+import 'package:online_journal_local/presentation/widgets/journal_wizard_steps/journal_content_step.dart';
+import 'package:online_journal_local/presentation/widgets/journal_wizard_steps/journal_review_step.dart';
 
-  
+class AddJournalWizard extends StatefulWidget {
   final String userId;
   const AddJournalWizard({super.key, required this.userId});
-  
 
   @override
   State<AddJournalWizard> createState() => _AddJournalWizardState();
@@ -111,17 +113,9 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
             title: const Text('Basics'),
             isActive: _currentStep >= 0,
             state: _currentStep > 0 ? StepState.complete : StepState.editing,
-            content: Form(
-              key: _step1Key,
-              child: TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Entry Title',
-                  hintText: 'e.g., A rainy Tuesday',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (val) => val == null || val.isEmpty ? 'Title is required' : null,
-              ),
+            content: JournalBasicsStep(
+              formKey: _step1Key,
+              titleController: _titleController,
             ),
           ),
 
@@ -130,19 +124,9 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
             title: const Text('Thoughts'),
             isActive: _currentStep >= 1,
             state: _currentStep > 1 ? StepState.complete : StepState.editing,
-            content: Form(
-              key: _step2Key,
-              child: TextFormField(
-                controller: _contentController,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  labelText: 'What happened?',
-                  hintText: 'Start writing...',
-                  border: OutlineInputBorder(),
-                  alignLabelWithHint: true,
-                ),
-                validator: (val) => val == null || val.isEmpty ? 'Content cannot be empty' : null,
-              ),
+            content: JournalContentStep(
+              formKey: _step2Key,
+              contentController: _contentController,
             ),
           ),
 
@@ -150,38 +134,16 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
           Step(
             title: const Text('Review'),
             isActive: _currentStep >= 2,
-            content: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('How did you feel?', style: TextStyle(fontWeight: FontWeight.bold)),
-                DropdownButton<String>(
-                  value: _selectedMood,
-                  isExpanded: true,
-                  items: _moods.map((String mood) {
-                    return DropdownMenuItem<String>(
-                      value: mood,
-                      child: Text(mood),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedMood = newValue!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                const Divider(),
-                const Text('Summary:', style: TextStyle(color: Colors.grey)),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(_titleController.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(
-                    _contentController.text, 
-                    maxLines: 2, 
-                    overflow: TextOverflow.ellipsis
-                  ),
-                ),
-              ],
+            content: JournalReviewStep(
+              selectedMood: _selectedMood,
+              moods: _moods,
+              title: _titleController.text,
+              content: _contentController.text,
+              onMoodChanged: (String? newValue) {
+                setState(() {
+                  _selectedMood = newValue!;
+                });
+              },
             ),
           ),
         ],
