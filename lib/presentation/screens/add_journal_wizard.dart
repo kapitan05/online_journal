@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_journal_local/presentation/cubit/journal_state.dart';
 import '../cubit/journal_cubit.dart';
 
 // Import the widgets
@@ -78,76 +79,128 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
     }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('New Journal Entry')),
-      body: Stepper(
-        type: StepperType.horizontal, // Shows steps in a row
-        currentStep: _currentStep,
-        onStepContinue: _onStepContinue,
-        onStepCancel: _onStepCancel,
-        // Customizing the button text for the final step
-        controlsBuilder: (context, details) {
-          final isLastStep = _currentStep == 2;
-          return Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Row(
-              children: [
-                FilledButton(
-                  onPressed: details.onStepContinue,
-                  child: Text(isLastStep ? 'FINISH & SAVE' : 'NEXT'),
-                ),
-                const SizedBox(width: 10),
-                TextButton(
-                  onPressed: details.onStepCancel,
-                  child: Text(isLastStep ? 'BACK' : 'CANCEL'),
-                ),
-              ],
+    // REFACTOR: Switched from BlocListener to BlocConsumer to handle UI overlay
+    return BlocConsumer<JournalCubit, JournalState>(
+      // 1. LISTENER: Only handles Navigation and Errors now (No dialogs)
+      listener: (context, state) {
+        if (state is JournalLoaded) {
+          Navigator.of(context).pop(); // Close Wizard Screen on success
+        } else if (state is JournalError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
             ),
           );
-        },
-        steps: [
-          // STEP 1: Title
-          Step(
-            title: const Text('Basics'),
-            isActive: _currentStep >= 0,
-            state: _currentStep > 0 ? StepState.complete : StepState.editing,
-            content: JournalBasicsStep(
-              formKey: _step1Key,
-              titleController: _titleController,
-            ),
-          ),
+        }
+      },
+      // 2. BUILDER: Renders the UI + Loading Overlay
+      builder: (context, state) {
+        final isLoading = state is JournalLoading;
 
-          // STEP 2: Content
-          Step(
-            title: const Text('Thoughts'),
-            isActive: _currentStep >= 1,
-            state: _currentStep > 1 ? StepState.complete : StepState.editing,
-            content: JournalContentStep(
-              formKey: _step2Key,
-              contentController: _contentController,
-            ),
-          ),
+        return Stack(
+          children: [
+            // LAYER 1: Your Original UI (wrapped in AbsorbPointer to block clicks)
+            AbsorbPointer(
+              absorbing: isLoading, // Disable interactions when loading
+              child: Scaffold(
+                appBar: AppBar(title: const Text('New Journal Entry')),
+                body: Stepper(
+                  type: StepperType.horizontal, // Shows steps in a row
+                  currentStep: _currentStep,
+                  onStepContinue: _onStepContinue,
+                  onStepCancel: _onStepCancel,
+                  // Customizing the button text for the final step
+                  controlsBuilder: (context, details) {
+                    final isLastStep = _currentStep == 2;
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Row(
+                        children: [
+                          FilledButton(
+                            // Logic: Disable button if loading
+                            onPressed: isLoading ? null : details.onStepContinue,
+                            child: Text(isLastStep ? 'FINISH & SAVE' : 'NEXT'),
+                          ),
+                          const SizedBox(width: 10),
+                          TextButton(
+                            // Logic: Disable button if loading
+                            onPressed: isLoading ? null : details.onStepCancel,
+                            child: Text(isLastStep ? 'BACK' : 'CANCEL'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  steps: [
+                    // STEP 1: Title
+                    Step(
+                      title: const Text('Basics'),
+                      isActive: _currentStep >= 0,
+                      state: _currentStep > 0 ? StepState.complete : StepState.editing,
+                      content: JournalBasicsStep(
+                        formKey: _step1Key,
+                        titleController: _titleController,
+                      ),
+                    ),
 
-          // STEP 3: Mood & Review
-          Step(
-            title: const Text('Review'),
-            isActive: _currentStep >= 2,
-            content: JournalReviewStep(
-              selectedMood: _selectedMood,
-              moods: _moods,
-              title: _titleController.text,
-              content: _contentController.text,
-              onMoodChanged: (String? newValue) {
-                setState(() {
-                  _selectedMood = newValue!;
-                });
-              },
+                    // STEP 2: Content
+                    Step(
+                      title: const Text('Thoughts'),
+                      isActive: _currentStep >= 1,
+                      state: _currentStep > 1 ? StepState.complete : StepState.editing,
+                      content: JournalContentStep(
+                        formKey: _step2Key,
+                        contentController: _contentController,
+                      ),
+                    ),
+
+                    // STEP 3: Mood & Review
+                    Step(
+                      title: const Text('Review'),
+                      isActive: _currentStep >= 2,
+                      content: JournalReviewStep(
+                        selectedMood: _selectedMood,
+                        moods: _moods,
+                        title: _titleController.text,
+                        content: _contentController.text,
+                        onMoodChanged: (String? newValue) {
+                          setState(() {
+                            _selectedMood = newValue!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
+
+            // LAYER 2: Loading Overlay (The Fix)
+            if (isLoading)
+              Container(
+                color: Colors.black54, // Semi-transparent background
+                child: const Center(
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text("Gemini AI is analyzing..."),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

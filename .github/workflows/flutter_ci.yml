@@ -32,6 +32,12 @@ jobs:
       - name: Verify Formatting
         run: dart format --output=none --set-exit-if-changed .
 
+      # Create a dummy .env file if it doesn't exist
+      # so flutter analyze doesn't fail
+      - name: Create dummy .env
+        run: cp .env.example .env
+
+
       # 6. Static Code Analysis
       - name: Analyze Code
         run: flutter analyze

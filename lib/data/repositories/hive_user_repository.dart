@@ -20,6 +20,30 @@ class HiveUserRepository implements UserRepository {
 
   HiveUserRepository(this._usersBox, this._sessionBox);
 
+  // --- HELPER: Reconstruct the full path dynamically ---
+  // *fixes the bug "avatar is not permanent on IOS"
+  Future<UserProfile> _mapModelToEntity(UserProfileModel model) async {
+    String? fullPath = model.profileImagePath;
+
+    // If we have a stored filename, append it to the CURRENT app directory
+    if (fullPath != null && fullPath.isNotEmpty) {
+       final appDir = await getApplicationDocumentsDirectory();
+       // This creates: /Current-iOS-Container/Documents/my_profile.jpg
+       fullPath = path.join(appDir.path, fullPath);
+    }
+
+    return UserProfile(
+      firstName: model.firstName,
+      lastName: model.lastName,
+      email: model.email,
+      password: model.password,
+      street: model.street,
+      city: model.city,
+      zipCode: model.zipCode,
+      profileImagePath: fullPath, // Return the valid CURRENT path
+    );
+  }
+
   // SIGN UP METHOD
   @override
   Future<void> registerUser(UserProfile user) async {
@@ -27,12 +51,14 @@ class HiveUserRepository implements UserRepository {
     if (_usersBox.containsKey(user.email)) {
       throw Exception('User with this email already exists.');
     }
+    
     // Handle profile image saving to permanent storage
-    String? permanentPath = user.profileImagePath;
+    String? fileNameOnly; // We will save ONLY the filename
 
-    if (permanentPath != null) {
+    if (user.profileImagePath != null) {
       try {
-        final sourceFile = File(permanentPath);
+        // Fix: Use the user's provided path, not undefined 'permanentPath'
+        final sourceFile = File(user.profileImagePath!);
 
         // 1. Check if the temp file actually exists
         if (await sourceFile.exists()) {
@@ -40,22 +66,23 @@ class HiveUserRepository implements UserRepository {
           final appDir = await getApplicationDocumentsDirectory();
 
           // 3. Create a new filename (e.g., 'profile_john.jpg') to avoid conflicts
-          // We use the email to make it unique per user, or just keep original name
-          final fileName =
-              '${user.email}_profile${path.extension(permanentPath)}';
-          final savedImage = await sourceFile.copy('${appDir.path}/$fileName');
+          // We use the email to make it unique per user
+          final fileName = '${user.email}_profile${path.extension(user.profileImagePath!)}';
+          
+          // Copy the file to the app's document directory
+          await sourceFile.copy(path.join(appDir.path, fileName));
 
-          // 4. Update the path variable to the NEW permanent location
-          permanentPath = savedImage.path;
+          // 4. Update variable to store ONLY the filename (relative path)
+          fileNameOnly = fileName;
         }
       } catch (e) {
-        // If copying fails, we might log it, but we continue with the original path
-        // (or null) to prevent crashing the registration.
+        // If copying fails, we might log it, but we continue 
+        // to prevent crashing the registration.
         debugPrint("Error saving profile image: $e");
       }
     }
 
-    // Save user using Email as the Key (Unique Index) and permanent image path
+    // Save user using Email as the Key (Unique Index) and permanent image filename
     final model = UserProfileModel(
       firstName: user.firstName,
       lastName: user.lastName,
@@ -64,7 +91,7 @@ class HiveUserRepository implements UserRepository {
       city: user.city,
       zipCode: user.zipCode,
       password: user.password,
-      profileImagePath: permanentPath,
+      profileImagePath: fileNameOnly, // <--- Store only the filename!
     );
 
     await _usersBox.put(user.email, model);
@@ -79,7 +106,9 @@ class HiveUserRepository implements UserRepository {
 
     // Login successful: Save session
     await _sessionBox.put('current_user_email', email);
-    return userModel.toEntity();
+    
+    // FIX: Use the helper to reconstruct the path dynamically
+    return await _mapModelToEntity(userModel);
   }
 
   @override
@@ -109,7 +138,9 @@ class HiveUserRepository implements UserRepository {
     // Find the user in the database
     final userModel = _usersBox.get(email);
 
-    // Return the entity
-    return userModel?.toEntity();
+    if (userModel == null) return null;
+
+    // FIX: Use the helper to reconstruct the path dynamically
+    return await _mapModelToEntity(userModel);
   }
 }

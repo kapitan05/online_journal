@@ -28,6 +28,9 @@ class JournalCubit extends Cubit<JournalState> {
   // production version with AI integration
   Future<void> addEntry(
       String title, String content, String mood, String userId) async {
+
+    emit(JournalLoading());
+
     try {
       // AI LOGIC START
       // Call Gemini to get analysis before saving.
@@ -54,7 +57,11 @@ class JournalCubit extends Cubit<JournalState> {
 
       await repository.addEntry(newEntry);
 
-      loadEntries(userId);
+      // fix the bug with contionuous loading state after adding entry
+      // we used to call loadEntries(userId); here which caused double loading states 
+      final entries = await repository.getEntries(userId);
+      emit(JournalLoaded(entries));
+
     } catch (e) {
       emit(JournalError("Failed to add entry: $e"));
     }
