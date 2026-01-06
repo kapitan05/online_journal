@@ -23,6 +23,7 @@ void main() async {
 
   // For development: Clear existing boxes to avoid stale data issues
   // await Hive.deleteBoxFromDisk('journalBox');
+  // await Hive.deleteBoxFromDisk('userBox');
 
   // Register Adapters for Hive models
   Hive.registerAdapter(JournalEntryModelAdapter());

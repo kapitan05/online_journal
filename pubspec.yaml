@@ -37,6 +37,9 @@ dependencies:
   google_generative_ai: ^0.4.7
   flutter_dotenv: ^6.0.0
 
+  crypto: ^3.0.3
+
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

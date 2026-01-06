@@ -79,7 +79,7 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
     }
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     // REFACTOR: Switched from BlocListener to BlocConsumer to handle UI overlay
     return BlocConsumer<JournalCubit, JournalState>(
@@ -121,7 +121,8 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
                         children: [
                           FilledButton(
                             // Logic: Disable button if loading
-                            onPressed: isLoading ? null : details.onStepContinue,
+                            onPressed:
+                                isLoading ? null : details.onStepContinue,
                             child: Text(isLastStep ? 'FINISH & SAVE' : 'NEXT'),
                           ),
                           const SizedBox(width: 10),
@@ -139,7 +140,9 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
                     Step(
                       title: const Text('Basics'),
                       isActive: _currentStep >= 0,
-                      state: _currentStep > 0 ? StepState.complete : StepState.editing,
+                      state: _currentStep > 0
+                          ? StepState.complete
+                          : StepState.editing,
                       content: JournalBasicsStep(
                         formKey: _step1Key,
                         titleController: _titleController,
@@ -150,7 +153,9 @@ class _AddJournalWizardState extends State<AddJournalWizard> {
                     Step(
                       title: const Text('Thoughts'),
                       isActive: _currentStep >= 1,
-                      state: _currentStep > 1 ? StepState.complete : StepState.editing,
+                      state: _currentStep > 1
+                          ? StepState.complete
+                          : StepState.editing,
                       content: JournalContentStep(
                         formKey: _step2Key,
                         contentController: _contentController,

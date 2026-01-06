@@ -24,11 +24,27 @@ class JournalEntryCard extends StatelessWidget {
       child: ListTile(
         // --- THE HERO ANIMATION SOURCE ---
         leading: Hero(
-          tag: 'mood_${entry.id}', // Unique ID links the two screens
+          tag: 'mood_${entry.id}',
           child: CircleAvatar(
             // ignore: deprecated_member_use
             backgroundColor: Colors.blueAccent.withOpacity(0.2),
-            child: Text(_getMoodEmoji(entry.mood)),
+            // 1. FittedBox forces the child to shrink to fit the circle
+            child: FittedBox(
+              fit: BoxFit.contain,
+              // 2. Material provides the "canvas" for the text so it doesn't show yellow lines
+              child: Material(
+                color: Colors.transparent,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.all(8.0), // Give it some breathing room
+                  child: Text(
+                    _getMoodEmoji(entry.mood),
+                    style: const TextStyle(
+                        fontSize: 24), // Keep font size consistent
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
         title: Text(

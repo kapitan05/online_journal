@@ -32,9 +32,21 @@ class JournalDetailsScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
-                child: Text(
-                  _getMoodEmoji(entry.mood),
-                  style: const TextStyle(fontSize: 50),
+                // --- FIX: Wrap text to prevent overflow during animation ---
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  // Wrap in Material so text styling remains correct during flight
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                          12.0), // Ensure emoji doesn't touch edges
+                      child: Text(
+                        _getMoodEmoji(entry.mood),
+                        style: const TextStyle(fontSize: 50),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
