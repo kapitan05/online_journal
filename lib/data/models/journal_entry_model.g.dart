@@ -24,13 +24,14 @@ class JournalEntryModelAdapter extends TypeAdapter<JournalEntryModel> {
       mood: fields[4] as String,
       userId: fields[6] as String,
       imagePath: fields[5] as String?,
+      aiAnalysis: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, JournalEntryModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class JournalEntryModelAdapter extends TypeAdapter<JournalEntryModel> {
       ..writeByte(5)
       ..write(obj.imagePath)
       ..writeByte(6)
-      ..write(obj.userId);
+      ..write(obj.userId)
+      ..writeByte(7)
+      ..write(obj.aiAnalysis);
   }
 
   @override

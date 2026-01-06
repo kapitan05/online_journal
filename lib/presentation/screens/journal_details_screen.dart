@@ -56,9 +56,48 @@ class JournalDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
             const Divider(),
+
+            // Only show if analysis exists
+            if (entry.aiAnalysis != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade50, // Distinct color for AI
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.purple.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.psychology, color: Colors.purple), // AI Icon
+                        SizedBox(width: 8),
+                        Text(
+                          "AI Insight",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.purple),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      entry.aiAnalysis!,
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.purple.shade900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
             const SizedBox(height: 24),
 
-            // Content text with a slight fade-in animation (Bonus Points!)
+            // Content text with a slight fade-in animation
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 500),

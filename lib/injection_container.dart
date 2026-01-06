@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:online_journal_local/data/repositories/hive_user_repository.dart';
+import 'package:online_journal_local/data/services/gemini_service.dart';
 import 'domain/repositories/journal_repository.dart';
 import 'data/repositories/hive_journal_repository.dart';
 import 'presentation/cubit/journal_cubit.dart';
@@ -36,5 +37,9 @@ Future<void> init() async {
     () => HiveJournalRepository(sl<Box<JournalEntryModel>>()),
   );
 
-  sl.registerFactory(() => JournalCubit(sl()));
+  // Register the Service
+  sl.registerLazySingleton(() => GeminiService());
+
+  // Update JournalCubit registration to inject the service
+  sl.registerFactory(() => JournalCubit(sl(), sl())); // Now takes 2 args
 }

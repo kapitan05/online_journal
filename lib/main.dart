@@ -11,9 +11,13 @@ import 'presentation/cubit/journal_cubit.dart';
 import 'data/models/journal_entry_model.dart';
 import 'presentation/screens/home_screen.dart';
 import 'presentation/theme/app_theme.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load the .env file
+  await dotenv.load(fileName: ".env");
 
   await Hive.initFlutter();
 

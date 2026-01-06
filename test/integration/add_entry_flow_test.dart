@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:online_journal_local/data/services/gemini_service.dart';
 import 'package:online_journal_local/domain/entities/journal_entry.dart';
 import 'package:online_journal_local/domain/repositories/journal_repository.dart';
 import 'package:online_journal_local/presentation/cubit/journal_cubit.dart';
@@ -13,6 +14,8 @@ import 'package:online_journal_local/domain/entities/user_profile.dart';
 // Mocks
 class MockJournalRepository extends Mock implements JournalRepository {}
 
+class MockGeminiService extends Mock implements GeminiService {}
+
 class MockAuthCubit extends Mock implements AuthCubit {}
 
 // Fake Entry for fallback
@@ -21,6 +24,7 @@ class FakeJournalEntry extends Fake implements JournalEntry {}
 void main() {
   late MockJournalRepository mockRepo;
   late MockAuthCubit mockAuthCubit;
+  late MockGeminiService mockGemini;
   late JournalCubit journalCubit;
 
   setUpAll(() {
@@ -31,13 +35,18 @@ void main() {
   setUp(() {
     mockRepo = MockJournalRepository();
     mockAuthCubit = MockAuthCubit();
-    journalCubit = JournalCubit(mockRepo);
+    mockGemini = MockGeminiService();
+    journalCubit = JournalCubit(mockRepo, mockGemini);
 
     // Stub: Get Entries returns empty list initially
     when(() => mockRepo.getEntries(any())).thenAnswer((_) async => []);
 
     // Stub: Add Entry returns void
     when(() => mockRepo.addEntry(any())).thenAnswer((_) async {});
+
+    // Stub: Gemini Service returns a dummy analysis
+    when(() => mockGemini.analyzeJournal(any(), any(), any()))
+        .thenAnswer((_) async => "Nice journal entry!");
 
     // Stub: Auth State is Authenticated (Required for HomeScreen to load)
     when(() => mockAuthCubit.state).thenReturn(AuthAuthenticated(UserProfile(

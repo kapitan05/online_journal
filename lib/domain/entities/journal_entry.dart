@@ -6,6 +6,7 @@ class JournalEntry {
   final DateTime date;
   final String mood;
   final String? imagePath;
+  final String? aiAnalysis;
 
   JournalEntry({
     required this.id,
@@ -15,5 +16,6 @@ class JournalEntry {
     required this.mood,
     this.imagePath,
     required this.userId,
+    this.aiAnalysis,
   });
 }

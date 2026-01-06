@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:online_journal_local/data/services/gemini_service.dart';
 import 'package:online_journal_local/domain/entities/journal_entry.dart';
 import 'package:online_journal_local/domain/repositories/journal_repository.dart';
 import 'package:online_journal_local/presentation/cubit/journal_cubit.dart';
@@ -9,9 +10,12 @@ import 'package:online_journal_local/presentation/cubit/journal_state.dart';
 // 1. Create a Mock Repository
 class MockJournalRepository extends Mock implements JournalRepository {}
 
+class MockGeminiService extends Mock implements GeminiService {}
+
 void main() {
   late JournalCubit cubit;
   late MockJournalRepository mockRepo;
+  late MockGeminiService mockGemini;
 
   // 2. Setup reusable data
   final testEntry = JournalEntry(
@@ -25,7 +29,8 @@ void main() {
 
   setUp(() {
     mockRepo = MockJournalRepository();
-    cubit = JournalCubit(mockRepo);
+    mockGemini = MockGeminiService();
+    cubit = JournalCubit(mockRepo, mockGemini);
   });
 
   tearDown(() {

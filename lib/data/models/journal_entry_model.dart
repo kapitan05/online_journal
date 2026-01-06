@@ -26,6 +26,9 @@ class JournalEntryModel extends HiveObject {
   @HiveField(6)
   final String userId;
 
+  @HiveField(7)
+  final String? aiAnalysis;
+
   JournalEntryModel({
     required this.id,
     required this.title,
@@ -34,6 +37,7 @@ class JournalEntryModel extends HiveObject {
     required this.mood,
     required this.userId,
     this.imagePath,
+    this.aiAnalysis,
   });
 
   // Convert model to domain entity
@@ -46,6 +50,7 @@ class JournalEntryModel extends HiveObject {
       mood: mood,
       imagePath: imagePath,
       userId: userId,
+      aiAnalysis: aiAnalysis,
     );
   }
 
@@ -59,6 +64,7 @@ class JournalEntryModel extends HiveObject {
       mood: entry.mood,
       imagePath: entry.imagePath,
       userId: entry.userId,
+      aiAnalysis: entry.aiAnalysis,
     );
   }
 }
