@@ -39,7 +39,7 @@ void main() {
     journalCubit = JournalCubit(mockRepo, mockGemini);
 
     // Stub: Get Entries returns empty list initially
-    when(() => mockRepo.getEntries(any()))
+    when(() => mockRepo.getEntries(any(that: isA<String>())))
         .thenAnswer((_) async => <JournalEntry>[]);
 
     // Stub: Add Entry returns void
@@ -128,6 +128,14 @@ void main() {
     await tester.ensureVisible(finishBtn);
     await tester.tap(finishBtn);
     await tester.pumpAndSettle();
+
+    // --- DEBUGGING AID ---
+    final snackBarFinder = find.byType(SnackBar);
+    if (snackBarFinder.evaluate().isNotEmpty) {
+      final errorText = find.descendant(of: snackBarFinder, matching: find.byType(Text));
+      // Print the actual error causing the test failure!
+      print("🚨 TEST FAILURE REASON: ${tester.widget<Text>(errorText.first).data}");
+    }
 
     // --- VERIFICATION ---
     // 1. Check we are back on Home Screen

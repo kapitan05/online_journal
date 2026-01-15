@@ -21,7 +21,6 @@ class HiveJournalRepository implements JournalRepository {
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
-
   @override
   Future<void> addEntry(JournalEntry entry) async {
     final model = JournalEntryModel.fromEntity(entry);
