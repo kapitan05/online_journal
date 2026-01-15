@@ -21,8 +21,7 @@ class HiveJournalRepository implements JournalRepository {
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
-  // NOTE: Ensure your Interface uses 'saveEntry' or 'addEntry'.
-  // I matched this to your previous Cubit code which used 'saveEntry'.
+
   @override
   Future<void> addEntry(JournalEntry entry) async {
     final model = JournalEntryModel.fromEntity(entry);

@@ -39,7 +39,8 @@ void main() {
     journalCubit = JournalCubit(mockRepo, mockGemini);
 
     // Stub: Get Entries returns empty list initially
-    when(() => mockRepo.getEntries(any())).thenAnswer((_) async => []);
+    when(() => mockRepo.getEntries(any()))
+        .thenAnswer((_) async => <JournalEntry>[]);
 
     // Stub: Add Entry returns void
     when(() => mockRepo.addEntry(any())).thenAnswer((_) async {});
