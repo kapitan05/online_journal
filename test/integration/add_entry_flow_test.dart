@@ -49,6 +49,25 @@ void main() {
     when(() => mockGemini.analyzeJournal(any(), any(), any()))
         .thenAnswer((_) async => "Nice journal entry!");
 
+    int getEntriesCallCount = 0;
+    when(() => mockRepo.getEntries(any(that: isA<String>())))
+        .thenAnswer((_) async {
+      if (getEntriesCallCount == 0) {
+        getEntriesCallCount++;
+        return <JournalEntry>[];
+      } else {
+        return <JournalEntry>[
+          JournalEntry(
+              id: '123',
+              userId: 'user',
+              title: 'Integration Title',
+              content: 'Integration Content',
+              date: DateTime.now(),
+              mood: 'Neutral')
+        ];
+      }
+    });
+
     // Stub: Auth State is Authenticated (Required for HomeScreen to load)
     when(() => mockAuthCubit.state).thenReturn(AuthAuthenticated(UserProfile(
         firstName: 'Test',
@@ -128,14 +147,6 @@ void main() {
     await tester.ensureVisible(finishBtn);
     await tester.tap(finishBtn);
     await tester.pumpAndSettle();
-
-    // --- DEBUGGING AID ---
-    final snackBarFinder = find.byType(SnackBar);
-    if (snackBarFinder.evaluate().isNotEmpty) {
-      final errorText = find.descendant(of: snackBarFinder, matching: find.byType(Text));
-      // Print the actual error causing the test failure!
-      print("🚨 TEST FAILURE REASON: ${tester.widget<Text>(errorText.first).data}");
-    }
 
     // --- VERIFICATION ---
     // 1. Check we are back on Home Screen
