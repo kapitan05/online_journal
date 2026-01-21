@@ -34,6 +34,6 @@ void main() {
     expect(find.text('😊'), findsOneWidget);
 
     // Check Date Logic (Simple check for part of the date string)
-    expect(find.textContaining('10/10/2023'), findsOneWidget);
+    expect(find.textContaining('Oct 10, 2023'), findsOneWidget);
   });
 }
