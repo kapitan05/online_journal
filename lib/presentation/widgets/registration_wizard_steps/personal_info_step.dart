@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
 class PersonalInfoStep extends StatelessWidget {
@@ -23,9 +24,6 @@ class PersonalInfoStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Regex for Validation email (Moved locally or passed if preferred, keeping local for simplicity)
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
     return Form(
       key: formKey,
       child: Column(
@@ -72,9 +70,13 @@ class PersonalInfoStep extends StatelessWidget {
                 border: OutlineInputBorder(),
                 hintText: 'student@example.com'),
             keyboardType: TextInputType.emailAddress,
-            validator: (v) {
-              if (v == null || v.isEmpty) return 'Email required';
-              if (!emailRegex.hasMatch(v)) return 'Enter a valid email';
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter an email';
+              }
+              if (!EmailValidator.validate(value)) {
+                return 'Enter a valid email address';
+              }
               return null;
             },
           ),

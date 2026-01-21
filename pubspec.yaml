@@ -38,6 +38,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
 
   crypto: ^3.0.3
+  email_validator: ^3.0.0
 
   
 dev_dependencies:

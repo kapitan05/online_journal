@@ -1,6 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/journal_entry.dart';
+import 'package:intl/intl.dart';
 // import 'package:intl/intl.dart'; // Add to pubspec.yaml if needed, or use simple formatting
+
+// enum  for moods
+enum Mood {
+  happy('Happy', '😊'),
+  sad('Sad', '😢'),
+  excited('Excited', '🤩'),
+  tired('Tired', '😴'),
+  neutral('Neutral', '😐');
+
+  final String label;
+  final String emoji;
+
+  const Mood(this.label, this.emoji);
+}
 
 // animation for mood emoji + journal details
 class JournalDetailsScreen extends StatelessWidget {
@@ -27,8 +42,7 @@ class JournalDetailsScreen extends StatelessWidget {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  // ignore: deprecated_member_use
-                  color: Colors.blueAccent.withOpacity(0.2),
+                  color: Colors.blueAccent.withAlpha(51),
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -62,7 +76,7 @@ class JournalDetailsScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              "${entry.date.day}/${entry.date.month}/${entry.date.year} ${entry.date.hour}:${entry.date.minute.toString().padLeft(2, '0')}",
+              DateFormat.yMMMd().format(entry.date),
               style: TextStyle(color: Colors.grey[600]),
             ),
 
@@ -130,18 +144,15 @@ class JournalDetailsScreen extends StatelessWidget {
     );
   }
 
-  String _getMoodEmoji(String mood) {
-    switch (mood) {
-      case 'Happy':
-        return '😊';
-      case 'Sad':
-        return '😢';
-      case 'Excited':
-        return '🤩';
-      case 'Tired':
-        return '😴';
-      default:
-        return '😐';
-    }
+  String _getMoodEmoji(String moodString) {
+    final moodEnum = switch (moodString) {
+      'Happy' => Mood.happy,
+      'Sad' => Mood.sad,
+      'Excited' => Mood.excited,
+      'Tired' => Mood.tired,
+      _ => Mood.neutral, // Fallback
+    };
+
+    return moodEnum.emoji;
   }
 }
